@@ -14,7 +14,7 @@ export async function signup(req, res) {
     if (!password) {
       return res.status(400).json({ message: 'Password is required.' });
     }
-    
+
     const newUser = new User({ name, email, password });
     await newUser.save();
 
@@ -49,6 +49,17 @@ export async function login(req, res) {
 }
 
 
-export async function (params) {
-  
+export async function search(req, res) {
+  try {
+    const user = await User.find({});
+    if (user) {
+      res.status(200).send({ message: "User Data found", data: user, count: user.length })
+    }
+    else {
+      res.status(200).send({ message: "User Data not found" })
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'login failed', error: error.message });
+  }
 }
+
