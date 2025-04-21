@@ -1,4 +1,6 @@
 import User from '../models/userModel.js';
+import jsonwebtoken from '../utils/utility.js';
+import CONSTANTS from "../config/constants.js"
 
 export async function signup(req, res) {
   try {
@@ -8,7 +10,7 @@ export async function signup(req, res) {
       res.status(400).send({ message: "name is required" });
     }
     if (!email) {
-      res.status(400).send({ message: "email is required" });
+      res.status(400).send({ message: CONSTANTS.EMAIL_REQ });
     }
 
     if (!password) {
@@ -28,7 +30,7 @@ export async function login(req, res) {
   try {
     const { email, password } = req.body;
     if (!email) {
-      res.status(400).send({ message: "email are required" });
+      res.status(400).send({ message: CONSTANTS.EMAIL_REQ });
     }
 
     if (!password) {
@@ -38,7 +40,8 @@ export async function login(req, res) {
     const user = await User.findOne({ email });
     console.log(user)
     if (user && user.password == password) {
-      res.status(201).send({ message: " login sucessfully" });
+      const token=jsonwebtoken(user._id);
+      res.status(201).send({ message: " login sucessfully", token });
     }
     else {
       res.status(401).send({ message: "Invalid user email or password" })
@@ -48,18 +51,29 @@ export async function login(req, res) {
   }
 }
 
-
 export async function search(req, res) {
   try {
-    const user = await User.find({});
-    if (user) {
-      res.status(200).send({ message: "User Data found", data: user, count: user.length })
-    }
-    else {
-      res.status(200).send({ message: "User Data not found" })
+    console.log(req.headers);
+    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const users = await User.find({}).select('-password') .skip(skip).limit(limit);
+    console.log(users);
+    
+    if (users.length > 0) {
+      res.status(200).send({
+        message: 'User Data found',
+        data: users,
+        count: users.length,
+        totalPages: Math.ceil(await User.countDocuments() / limit),
+        currentPage: page
+      });
+    } else {
+      res.status(404).send({ message: 'No users found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'login failed', error: error.message });
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 }
 
