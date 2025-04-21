@@ -54,14 +54,26 @@ export async function login(req, res) {
 export async function search(req, res) {
   try {
     console.log(req.headers);
+    const users_name=req.query.name || "";
+    const users_email=req.query.email ||
+    console.log(users_name);
+    let filterObject= {}
+    if(users_name){
+      filterObject.name= users_name
+    }
+    if(users_email){
+      filterObject.email=users_email
+    }
     
+
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    const users = await User.find({}).select('-password') .skip(skip).limit(limit);
+    const users = await User.find(filterObject).select('-password').skip(skip).limit(limit)
     console.log(users);
     
     if (users.length > 0) {
+
       res.status(200).send({
         message: 'User Data found',
         data: users,

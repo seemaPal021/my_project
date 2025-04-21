@@ -10,10 +10,8 @@ const authMiddleware = (req, res, next) => {
   }
 
   // Extract token from header
-  console.log(authHeader);
   
   const token = authHeader.split(' ')[1]; // Expected format: 'Bearer <token>'
-  console.log(token);
   
   // Check if token is present
   if (!token) {
