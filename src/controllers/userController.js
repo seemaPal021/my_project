@@ -7,10 +7,10 @@ export async function signup(req, res) {
     const { name, email, password } = req.body;
 
     if (!name) {
-      res.status(400).send({ message: "name is required" });
+      return res.status(400).send({ message: "name is required" });
     }
     if (!email) {
-      res.status(400).send({ message: CONSTANTS.EMAIL_REQ });
+     return res.status(400).send({ message: CONSTANTS.EMAIL_REQ });
     }
 
     if (!password) {
@@ -75,5 +75,21 @@ export async function search(req, res) {
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
+}
+
+export async function deleteUser(req, res){
+  const userId= req.params.id
+  if(!userId){
+    return res.status(400).send({message: "UserID is missing"})
+  }
+  const result = await User.deleteOne({_id: userId})
+  console.log(result);
+  
+  if(result.deletedCount==0){
+    res.status(500).send({message: "Something went wrong unable to delete"})
+  }else{
+    res.status(200).send({message: "User deleted sucessfully"})
+  }
+
 }
 
