@@ -53,7 +53,7 @@ export async function login(req, res) {
 
 export async function search(req, res) {
   try {
-    
+    console.log(req.headers);
     const users_name=req.query.name || "";
     const users_email=req.query.email ||
     console.log(users_name);
