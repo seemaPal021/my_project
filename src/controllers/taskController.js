@@ -1,6 +1,6 @@
 
 import Task from '../models/taskModel.js';
-import {taskValidationSchema} from '../validations/taskValidation.js'
+import {taskValidationSchema, updateTaskValidation} from '../validations/taskValidation.js'
 export async function create(req, res) {
     try{
     const { error } = taskValidationSchema.validate(req.body);
@@ -90,7 +90,7 @@ export async function updateTask(req, res) {
     if (!taskId) {
         return res.status(400).send({ message: "TaskID is missing" })
     }
-    const { error } = taskValidationSchema.validate(req.body);
+    const { error } = updateTaskValidation.validate(req.body);
     if (error) {
         return res.status(400).json({ message: error.details[0].message });
     }
