@@ -2,6 +2,7 @@
 import Task from '../models/taskModel.js';
 import {taskValidationSchema} from '../validations/taskValidation.js'
 export async function create(req, res) {
+    try{
     const { error } = taskValidationSchema.validate(req.body);
     if (error) {
         return res.status(400).json({ message: error.details[0].message });
@@ -10,7 +11,10 @@ export async function create(req, res) {
     const taskPayload = new Task(taskData);
     await taskPayload.save();
     return res.status(201).send({ message: "create newtask successfully" });
-
+    }
+    catch(err){
+        res.status(500).send({message: "Something Went Wrong"})
+    }
 
 }
 
